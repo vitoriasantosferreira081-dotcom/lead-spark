@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_agents: {
+        Row: {
+          active: boolean | null
+          can_move_leads: boolean | null
+          can_score_leads: boolean | null
+          channel: string | null
+          coexistence_mode: boolean | null
+          created_at: string | null
+          id: string
+          model: string | null
+          name: string
+          provider: string | null
+          system_prompt: string | null
+          training_data: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          can_move_leads?: boolean | null
+          can_score_leads?: boolean | null
+          channel?: string | null
+          coexistence_mode?: boolean | null
+          created_at?: string | null
+          id?: string
+          model?: string | null
+          name: string
+          provider?: string | null
+          system_prompt?: string | null
+          training_data?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          can_move_leads?: boolean | null
+          can_score_leads?: boolean | null
+          channel?: string | null
+          coexistence_mode?: boolean | null
+          created_at?: string | null
+          id?: string
+          model?: string | null
+          name?: string
+          provider?: string | null
+          system_prompt?: string | null
+          training_data?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cadences: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          name: string
+          stage_id: string
+          steps: Json | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          name: string
+          stage_id: string
+          steps?: Json | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          stage_id?: string
+          steps?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cadences_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           created_at: string | null
@@ -43,6 +129,33 @@ export type Database = {
           name?: string
           replied_count?: number | null
           status?: Database["public"]["Enums"]["campaign_status"] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      departments: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          receive_leads: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          receive_leads?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          receive_leads?: boolean | null
           user_id?: string
         }
         Relationships: []
@@ -77,59 +190,193 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_score_answers: {
+        Row: {
+          answer: string | null
+          created_at: string | null
+          id: string
+          lead_id: string
+          question_id: string
+          score_contribution: number | null
+          user_id: string
+        }
+        Insert: {
+          answer?: string | null
+          created_at?: string | null
+          id?: string
+          lead_id: string
+          question_id: string
+          score_contribution?: number | null
+          user_id: string
+        }
+        Update: {
+          answer?: string | null
+          created_at?: string | null
+          id?: string
+          lead_id?: string
+          question_id?: string
+          score_contribution?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_score_answers_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_score_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "lead_score_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_score_questions: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          id: string
+          options: Json | null
+          position: number | null
+          question: string
+          type: string | null
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          options?: Json | null
+          position?: number | null
+          question: string
+          type?: string | null
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          options?: Json | null
+          position?: number | null
+          question?: string
+          type?: string | null
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
+          ai_agent_id: string | null
           ai_context: string | null
           company: string | null
           created_at: string | null
+          department_id: string | null
           email: string | null
           full_name: string
           icp_score: number | null
           id: string
+          is_human_mode: boolean | null
           job_title: string | null
+          lead_score: number | null
           linkedin_url: string | null
           phone: string | null
+          pipeline_id: string | null
           provider_source: string | null
           signal_type: string | null
+          stage_id: string | null
           status: Database["public"]["Enums"]["lead_status"] | null
+          tags: string[] | null
           updated_at: string | null
           user_id: string
+          whatsapp: string | null
         }
         Insert: {
+          ai_agent_id?: string | null
           ai_context?: string | null
           company?: string | null
           created_at?: string | null
+          department_id?: string | null
           email?: string | null
           full_name: string
           icp_score?: number | null
           id?: string
+          is_human_mode?: boolean | null
           job_title?: string | null
+          lead_score?: number | null
           linkedin_url?: string | null
           phone?: string | null
+          pipeline_id?: string | null
           provider_source?: string | null
           signal_type?: string | null
+          stage_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
+          tags?: string[] | null
           updated_at?: string | null
           user_id: string
+          whatsapp?: string | null
         }
         Update: {
+          ai_agent_id?: string | null
           ai_context?: string | null
           company?: string | null
           created_at?: string | null
+          department_id?: string | null
           email?: string | null
           full_name?: string
           icp_score?: number | null
           id?: string
+          is_human_mode?: boolean | null
           job_title?: string | null
+          lead_score?: number | null
           linkedin_url?: string | null
           phone?: string | null
+          pipeline_id?: string | null
           provider_source?: string | null
           signal_type?: string | null
+          stage_id?: string | null
           status?: Database["public"]["Enums"]["lead_status"] | null
+          tags?: string[] | null
           updated_at?: string | null
           user_id?: string
+          whatsapp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_ai_agent_id_fkey"
+            columns: ["ai_agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -176,6 +423,112 @@ export type Database = {
           },
         ]
       }
+      pipeline_automations: {
+        Row: {
+          action_config: Json | null
+          action_type: string
+          active: boolean | null
+          created_at: string | null
+          id: string
+          stage_id: string
+          trigger: string
+          user_id: string
+        }
+        Insert: {
+          action_config?: Json | null
+          action_type: string
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          stage_id: string
+          trigger: string
+          user_id: string
+        }
+        Update: {
+          action_config?: Json | null
+          action_type?: string
+          active?: boolean | null
+          created_at?: string | null
+          id?: string
+          stage_id?: string
+          trigger?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_automations_stage_id_fkey"
+            columns: ["stage_id"]
+            isOneToOne: false
+            referencedRelation: "pipeline_stages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipeline_stages: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+          pipeline_id: string
+          position: number
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          pipeline_id: string
+          position: number
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          pipeline_id?: string
+          position?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_stages_pipeline_id_fkey"
+            columns: ["pipeline_id"]
+            isOneToOne: false
+            referencedRelation: "pipelines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pipelines: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       signals: {
         Row: {
           actor_id: string | null
@@ -212,6 +565,75 @@ export type Database = {
           processed?: boolean | null
           source_url?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      templates: {
+        Row: {
+          approved: boolean | null
+          body: string
+          category: string | null
+          channel: string | null
+          created_at: string | null
+          id: string
+          name: string
+          user_id: string
+          variables: Json | null
+        }
+        Insert: {
+          approved?: boolean | null
+          body: string
+          category?: string | null
+          channel?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          user_id: string
+          variables?: Json | null
+        }
+        Update: {
+          approved?: boolean | null
+          body?: string
+          category?: string | null
+          channel?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          user_id?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
+      whatsapp_providers: {
+        Row: {
+          active: boolean | null
+          api_key: string | null
+          created_at: string | null
+          id: string
+          name: string
+          type: string | null
+          user_id: string
+          webhook_url: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          api_key?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          type?: string | null
+          user_id: string
+          webhook_url?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          api_key?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          type?: string | null
+          user_id?: string
+          webhook_url?: string | null
         }
         Relationships: []
       }
