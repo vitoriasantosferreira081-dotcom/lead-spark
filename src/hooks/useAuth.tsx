@@ -7,11 +7,26 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, fullName?: string) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
+async function ensureProfile(user: User) {
+  const { data } = await supabase.from("profiles").select("id").eq("id", user.id).single();
+  if (!data) {
+    await supabase.from("profiles").insert({
+      id: user.id,
+      full_name: user.user_metadata?.full_name || "",
+      email: user.email || "",
+    } as any);
+    // Default role: editor for first user, visualizador otherwise
+    const { count } = await supabase.from("user_roles").select("id", { count: "exact", head: true });
+    const defaultRole = (count === 0) ? "editor" : "visualizador";
+    await supabase.from("user_roles").insert({ user_id: user.id, role: defaultRole } as any);
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -23,12 +38,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        setTimeout(() => ensureProfile(session.user), 0);
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        ensureProfile(session.user);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -39,8 +60,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) throw error;
   };
 
-  const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+  const signUp = async (email: string, password: string, fullName?: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { full_name: fullName || "" },
+      },
+    });
     if (error) throw error;
   };
 
