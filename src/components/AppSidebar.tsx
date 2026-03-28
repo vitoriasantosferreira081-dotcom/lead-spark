@@ -1,7 +1,8 @@
-import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Zap, GitBranch, Bot } from "lucide-react";
+import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Zap, GitBranch, Bot, Building2, Shield } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useRole } from "@/hooks/useRole";
 import {
   Sidebar,
   SidebarContent,
@@ -16,14 +17,23 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 
-const navItems = [
+const mainNav = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Leads", url: "/leads", icon: Users },
   { title: "Kanban", url: "/kanban", icon: Columns3 },
   { title: "Campanhas", url: "/campanhas", icon: Megaphone },
   { title: "Sinais", url: "/sinais", icon: Radio },
+];
+
+const pipelineNav = [
   { title: "Pipelines", url: "/pipelines", icon: GitBranch },
+  { title: "Automações", url: "/automacoes", icon: Zap },
   { title: "Agentes IA", url: "/agentes", icon: Bot },
+];
+
+const adminNav = [
+  { title: "Organizações", url: "/organizacoes", icon: Building2 },
+  { title: "Usuários", url: "/usuarios", icon: Shield },
   { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
 
@@ -32,6 +42,27 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const { signOut } = useAuth();
+  const { canEdit, canManage } = useRole();
+
+  const renderItems = (items: typeof mainNav) => (
+    <SidebarMenu>
+      {items.map((item) => (
+        <SidebarMenuItem key={item.title}>
+          <SidebarMenuButton asChild>
+            <NavLink
+              to={item.url}
+              end={item.url === "/"}
+              className="hover:bg-sidebar-accent/50"
+              activeClassName="bg-sidebar-accent text-primary font-medium"
+            >
+              <item.icon className="mr-2 h-4 w-4" />
+              {!collapsed && <span>{item.title}</span>}
+            </NavLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -41,28 +72,20 @@ export function AppSidebar() {
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md gradient-primary">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            {!collapsed && <span className="text-lg font-bold text-foreground">Altius GTM</span>}
+            {!collapsed && <span className="text-lg font-bold text-foreground">Altius CRM</span>}
           </div>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/"}
-                      className="hover:bg-sidebar-accent/50"
-                      activeClassName="bg-sidebar-accent text-primary font-medium"
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
+          <SidebarGroupLabel>Principal</SidebarGroupLabel>
+          <SidebarGroupContent>{renderItems(mainNav)}</SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Pipeline</SidebarGroupLabel>
+          <SidebarGroupContent>{renderItems(canEdit ? pipelineNav : pipelineNav.filter(i => i.url !== "/automacoes"))}</SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Administração</SidebarGroupLabel>
+          <SidebarGroupContent>{renderItems(canManage ? adminNav : adminNav.filter(i => i.url !== "/usuarios"))}</SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
