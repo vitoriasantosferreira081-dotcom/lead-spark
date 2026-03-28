@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Zap } from "lucide-react";
+import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Zap, GitBranch, Bot } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,6 +22,8 @@ const navItems = [
   { title: "Kanban", url: "/kanban", icon: Columns3 },
   { title: "Campanhas", url: "/campanhas", icon: Megaphone },
   { title: "Sinais", url: "/sinais", icon: Radio },
+  { title: "Pipelines", url: "/pipelines", icon: GitBranch },
+  { title: "Agentes IA", url: "/agentes", icon: Bot },
   { title: "Configurações", url: "/configuracoes", icon: Settings },
 ];
 
