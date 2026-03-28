@@ -12,6 +12,8 @@ import Kanban from "./pages/Kanban";
 import Campanhas from "./pages/Campanhas";
 import Sinais from "./pages/Sinais";
 import Configuracoes from "./pages/Configuracoes";
+import Pipelines from "./pages/Pipelines";
+import Agentes from "./pages/Agentes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,8 @@ const AppRoutes = () => (
     <Route path="/campanhas" element={<ProtectedRoute><Campanhas /></ProtectedRoute>} />
     <Route path="/sinais" element={<ProtectedRoute><Sinais /></ProtectedRoute>} />
     <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
+    <Route path="/pipelines" element={<ProtectedRoute><Pipelines /></ProtectedRoute>} />
+    <Route path="/agentes" element={<ProtectedRoute><Agentes /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
