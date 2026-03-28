@@ -159,56 +159,17 @@ export default function Configuracoes() {
           <LayerSection layer="prospection" label="Prospecção" providers={prospectionProviders} />
           <LayerSection layer="ai" label="IA (Enriquecimento)" providers={aiProviders} />
           <LayerSection layer="signals" label="Sinais" providers={signalProviders} />
-          <Card className="glass-card">
-            <CardHeader><CardTitle className="text-lg">Outreach (WhatsApp)</CardTitle></CardHeader>
-            <CardContent>
-              <OutreachConfig />
-            </CardContent>
-          </Card>
+          <LayerSection layer="outreach" label="Outreach (WhatsApp)" providers={outreachProviders} />
         </TabsContent>
       </Tabs>
     </div>
   );
 }
 
-function OutreachConfig() {
-  const { user } = useAuth();
-  const [webhookUrl, setWebhookUrl] = useState("");
-
-  useEffect(() => {
-    if (!user) return;
-    const load = async () => {
-      const { data } = await supabase.from("integrations_config").select("*").eq("layer", "outreach").eq("user_id", user.id).limit(1);
-      if (data?.[0]) {
-        const extra = (data[0].extra_config || {}) as Record<string, string>;
-        setWebhookUrl(extra.WASELLER_WEBHOOK_URL || "");
-      }
-    };
-    load();
-  }, [user]);
-
-  const save = async () => {
-    if (!user) return;
-    const { data: existing } = await supabase.from("integrations_config").select("id").eq("layer", "outreach").eq("user_id", user.id);
-    const payload = {
-      user_id: user.id,
-      layer: "outreach",
-      provider: "waseller",
-      active: true,
-      extra_config: { WASELLER_WEBHOOK_URL: webhookUrl } as any,
-    };
-    if (existing && existing.length > 0) {
-      await supabase.from("integrations_config").update(payload).eq("id", existing[0].id);
-    } else {
-      await supabase.from("integrations_config").insert(payload);
-    }
-    toast.success("Webhook salvo!");
-  };
-
-  return (
-    <div className="space-y-4">
-      <div><Label>Waseller Webhook URL</Label><Input type="url" value={webhookUrl} onChange={e => setWebhookUrl(e.target.value)} placeholder="https://api.waseller.com/webhook/..." /></div>
-      <Button onClick={save}><Save className="mr-2 h-4 w-4" /> Salvar</Button>
-    </div>
-  );
-}
+const outreachProviders: ProviderConfig[] = [
+  { name: "Waseller", value: "waseller", fields: [{ label: "Webhook URL", key: "WASELLER_WEBHOOK_URL", type: "url", placeholder: "https://api.waseller.com/webhook/..." }] },
+  { name: "N8N", value: "n8n", fields: [{ label: "Webhook URL", key: "N8N_WEBHOOK_URL", type: "url", placeholder: "https://n8n.exemplo.com/webhook/..." }, { label: "Auth Header (opcional)", key: "N8N_AUTH_HEADER", placeholder: "Bearer token..." }] },
+  { name: "Z-API", value: "zapi", fields: [{ label: "Instance URL", key: "ZAPI_INSTANCE_URL", type: "url", placeholder: "https://api.z-api.io/instances/..." }, { label: "Token", key: "ZAPI_TOKEN", placeholder: "seu-token-zapi" }] },
+  { name: "Evolution API", value: "evolution", fields: [{ label: "Base URL", key: "EVOLUTION_BASE_URL", type: "url", placeholder: "https://evolution.exemplo.com" }, { label: "API Key", key: "EVOLUTION_API_KEY", placeholder: "sua-api-key" }] },
+  { name: "Custom Webhook", value: "custom_webhook", fields: [{ label: "Webhook URL", key: "CUSTOM_WEBHOOK_URL", type: "url", placeholder: "https://seu-endpoint.com/webhook" }, { label: "API Key (opcional)", key: "CUSTOM_WEBHOOK_API_KEY", placeholder: "sua-api-key" }, { label: "Header de Auth (opcional)", key: "CUSTOM_WEBHOOK_AUTH_HEADER", placeholder: "Authorization: Bearer ..." }] },
+];

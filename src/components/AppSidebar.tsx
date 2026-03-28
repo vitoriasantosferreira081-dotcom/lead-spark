@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Zap, GitBranch, Bot, Building2, Shield } from "lucide-react";
+import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Rocket, GitBranch, Bot, Building2, Shield } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -70,9 +70,9 @@ export function AppSidebar() {
         <SidebarGroup>
           <div className="flex items-center gap-2 px-2 py-4">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md gradient-primary">
-              <Zap className="h-4 w-4 text-primary-foreground" />
+              <Rocket className="h-4 w-4 text-primary-foreground" />
             </div>
-            {!collapsed && <span className="text-lg font-bold text-foreground">Altius CRM</span>}
+            {!collapsed && <span className="text-lg font-bold text-foreground">Althius CRM</span>}
           </div>
           <SidebarGroupLabel>Principal</SidebarGroupLabel>
           <SidebarGroupContent>{renderItems(mainNav)}</SidebarGroupContent>
