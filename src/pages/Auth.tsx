@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Zap } from "lucide-react";
+import { Rocket } from "lucide-react";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
@@ -41,9 +41,9 @@ export default function Auth() {
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg gradient-primary">
-            <Zap className="h-6 w-6 text-primary-foreground" />
+            <Rocket className="h-6 w-6 text-primary-foreground" />
           </div>
-          <CardTitle className="text-2xl font-bold">Altius GTM</CardTitle>
+          <CardTitle className="text-2xl font-bold">Althius CRM</CardTitle>
           <CardDescription>Plataforma de Go-to-Market Engineering</CardDescription>
         </CardHeader>
         <CardContent>
