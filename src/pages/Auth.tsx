@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Rocket } from "lucide-react";
+import althiusLogo from "@/assets/althius-logo.png";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
@@ -15,7 +15,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-background"><div className="animate-pulse-glow text-primary text-2xl font-bold">Carregando...</div></div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-background"><div className="animate-pulse text-foreground text-2xl font-bold">Carregando...</div></div>;
   if (user) return <Navigate to="/" replace />;
 
   const handleAuth = async (mode: "login" | "signup") => {
@@ -27,7 +27,7 @@ export default function Auth() {
         toast.success("Login realizado!");
       } else {
         await signUp(email, password);
-        toast.success("Conta criada! Verifique seu email.");
+        toast.success("Conta criada!");
       }
     } catch (err: any) {
       toast.error(err.message || "Erro de autenticação");
@@ -40,9 +40,7 @@ export default function Auth() {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md glass-card">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg gradient-primary">
-            <Rocket className="h-6 w-6 text-primary-foreground" />
-          </div>
+          <img src={althiusLogo} alt="Althius CRM" className="mx-auto mb-4 h-16 w-16 rounded-lg object-contain bg-foreground/10 p-1" />
           <CardTitle className="text-2xl font-bold">Althius CRM</CardTitle>
           <CardDescription>Plataforma de Go-to-Market Engineering</CardDescription>
         </CardHeader>

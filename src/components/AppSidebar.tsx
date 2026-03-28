@@ -73,7 +73,6 @@ export function AppSidebar() {
             <img src={althiusLogo} alt="Althius" className="h-8 w-8 shrink-0 rounded-md object-contain bg-foreground/10 p-0.5" />
             {!collapsed && <span className="text-lg font-bold text-foreground">Althius CRM</span>}
           </div>
-          </div>
           <SidebarGroupLabel>Principal</SidebarGroupLabel>
           <SidebarGroupContent>{renderItems(mainNav)}</SidebarGroupContent>
         </SidebarGroup>
