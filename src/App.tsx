@@ -19,6 +19,7 @@ import Agentes from "./pages/Agentes";
 import Usuarios from "./pages/Usuarios";
 import Organizacoes from "./pages/Organizacoes";
 import Automacoes from "./pages/Automacoes";
+import WhatsAppInbox from "./pages/WhatsAppInbox";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const AppRoutes = () => (
     <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
     <Route path="/organizacoes" element={<ProtectedRoute><Organizacoes /></ProtectedRoute>} />
     <Route path="/automacoes" element={<ProtectedRoute><Automacoes /></ProtectedRoute>} />
+    <Route path="/whatsapp" element={<ProtectedRoute><WhatsAppInbox /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Rocket, GitBranch, Bot, Building2, Shield } from "lucide-react";
+import { LayoutDashboard, Users, Columns3, Megaphone, Radio, Settings, LogOut, Rocket, GitBranch, Bot, Building2, Shield, MessageSquare } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 
 const mainNav = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "WhatsApp", url: "/whatsapp", icon: MessageSquare },
   { title: "Leads", url: "/leads", icon: Users },
   { title: "Kanban", url: "/kanban", icon: Columns3 },
   { title: "Campanhas", url: "/campanhas", icon: Megaphone },
