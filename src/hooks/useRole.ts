@@ -18,7 +18,8 @@ export function useRole() {
         .eq("user_id", user.id)
         .limit(1)
         .single();
-      setRole((data?.role as AppRole) || null);
+      // If no role assigned yet, default to editor (first user / owner)
+      setRole((data?.role as AppRole) || "editor");
       setLoading(false);
     };
     fetchRole();
