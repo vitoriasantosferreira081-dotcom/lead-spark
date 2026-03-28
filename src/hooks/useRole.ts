@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-export type AppRole = "visualizador" | "gestor" | "editor";
+export type AppRole = "visualizador" | "gestor" | "editor" | "admin";
 
 export function useRole() {
   const { user } = useAuth();
@@ -18,16 +18,17 @@ export function useRole() {
         .eq("user_id", user.id)
         .limit(1)
         .single();
-      // If no role assigned yet, default to editor (first user / owner)
       setRole((data?.role as AppRole) || "editor");
       setLoading(false);
     };
     fetchRole();
   }, [user]);
 
-  const canEdit = role === "editor" || role === "gestor";
-  const canManage = role === "editor";
+  const isAdmin = role === "admin";
+  const canEdit = isAdmin || role === "editor";
+  const canManage = isAdmin || role === "editor";
+  const isGestor = role === "gestor";
   const isViewer = role === "visualizador";
 
-  return { role, loading, canEdit, canManage, isViewer };
+  return { role, loading, isAdmin, canEdit, canManage, isGestor, isViewer };
 }

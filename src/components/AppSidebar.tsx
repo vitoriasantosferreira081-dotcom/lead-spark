@@ -3,6 +3,7 @@ import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useRole } from "@/hooks/useRole";
+import althiusLogo from "@/assets/althius-logo.png";
 import {
   Sidebar,
   SidebarContent,
@@ -69,9 +70,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <div className="flex items-center gap-2 px-2 py-4">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md gradient-primary">
-              <Rocket className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <img src={althiusLogo} alt="Althius" className="h-8 w-8 shrink-0 rounded-md object-contain bg-foreground/10 p-0.5" />
             {!collapsed && <span className="text-lg font-bold text-foreground">Althius CRM</span>}
           </div>
           <SidebarGroupLabel>Principal</SidebarGroupLabel>
