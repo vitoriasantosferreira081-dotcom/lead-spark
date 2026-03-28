@@ -5,13 +5,13 @@ import { useRole, AppRole } from "@/hooks/useRole";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { UserPlus, Users, Pencil, UserX, Shield } from "lucide-react";
+import { UserPlus, Pencil, UserX, Shield } from "lucide-react";
 
 interface UserProfile {
   id: string;
@@ -21,7 +21,8 @@ interface UserProfile {
   role?: AppRole;
 }
 
-const roleBadge: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+const roleBadge: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
+  admin: { label: "Administrador", variant: "destructive" },
   editor: { label: "Editor", variant: "default" },
   gestor: { label: "Gestor", variant: "secondary" },
   visualizador: { label: "Visualizador", variant: "outline" },
@@ -29,7 +30,7 @@ const roleBadge: Record<string, { label: string; variant: "default" | "secondary
 
 export default function Usuarios() {
   const { user } = useAuth();
-  const { canManage } = useRole();
+  const { isAdmin, canManage } = useRole();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -66,9 +67,12 @@ export default function Usuarios() {
     if (!form.full_name || !form.email) { toast.error("Preencha nome e e-mail"); return; }
 
     if (editUser) {
-      // Update profile
+      // Don't allow changing admin role
+      if (editUser.role === "admin" && form.role !== "admin") {
+        toast.error("Não é possível alterar o tipo de acesso do administrador");
+        return;
+      }
       await supabase.from("profiles").update({ full_name: form.full_name, email: form.email }).eq("id", editUser.id);
-      // Update role
       const { data: existingRole } = await supabase.from("user_roles").select("id").eq("user_id", editUser.id);
       if (existingRole && existingRole.length > 0) {
         await supabase.from("user_roles").update({ role: form.role } as any).eq("id", existingRole[0].id);
@@ -77,7 +81,6 @@ export default function Usuarios() {
       }
       toast.success("Usuário atualizado");
     } else {
-      // Create new user via signup
       if (!form.password || form.password.length < 6) { toast.error("Senha deve ter no mínimo 6 caracteres"); return; }
       if (form.password !== form.confirmPassword) { toast.error("Senhas não conferem"); return; }
 
@@ -88,22 +91,23 @@ export default function Usuarios() {
       });
       if (error) { toast.error(error.message); return; }
       if (signupData.user) {
-        // Profile and role will be created by the app logic
-        // We just need to ensure the role is set after creation
         await supabase.from("profiles").upsert({ id: signupData.user.id, full_name: form.full_name, email: form.email } as any);
         await supabase.from("user_roles").upsert({ user_id: signupData.user.id, role: form.role } as any);
       }
-      toast.success("Usuário criado! Um e-mail de verificação foi enviado.");
+      toast.success("Usuário criado com sucesso!");
     }
     setDialogOpen(false);
     fetchUsers();
   };
 
   const toggleActive = async (u: UserProfile) => {
+    if (u.role === "admin") { toast.error("Não é possível desativar o administrador"); return; }
     await supabase.from("profiles").update({ active: !u.active }).eq("id", u.id);
     toast.success(u.active ? "Usuário desativado" : "Usuário reativado");
     fetchUsers();
   };
+
+  const canManageUsers = isAdmin || canManage;
 
   return (
     <div className="space-y-6">
@@ -112,13 +116,33 @@ export default function Usuarios() {
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Shield className="h-6 w-6 text-primary" /> Gestão de Usuários
           </h1>
-          <p className="text-muted-foreground">Gerencie acessos e permissões</p>
+          <p className="text-muted-foreground">Gerencie acessos e permissões do sistema</p>
         </div>
-        {canManage && (
+        {canManageUsers && (
           <Button onClick={openAdd}>
             <UserPlus className="mr-2 h-4 w-4" /> Adicionar Usuário
           </Button>
         )}
+      </div>
+
+      {/* Permission Legend */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        {[
+          { role: "admin", desc: "Acesso total. Gerencia todos os usuários e configurações." },
+          { role: "editor", desc: "Edita fluxos, automações, prompts, templates, dashboards e configurações." },
+          { role: "gestor", desc: "Gerencia projetos, organizações, agentes. Sem acesso a prompts e API Keys." },
+          { role: "visualizador", desc: "Visualiza conversas, dashboards e relatórios designados." },
+        ].map(({ role, desc }) => {
+          const rb = roleBadge[role];
+          return (
+            <Card key={role} className="glass-card">
+              <CardContent className="p-3">
+                <Badge variant={rb.variant} className="mb-1">{rb.label}</Badge>
+                <p className="text-xs text-muted-foreground">{desc}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <Card className="glass-card">
@@ -130,7 +154,7 @@ export default function Usuarios() {
                 <TableHead>E-mail</TableHead>
                 <TableHead>Tipo de Acesso</TableHead>
                 <TableHead>Status</TableHead>
-                {canManage && <TableHead className="text-right">Ações</TableHead>}
+                {canManageUsers && <TableHead className="text-right">Ações</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -151,12 +175,14 @@ export default function Usuarios() {
                           {u.active !== false ? "Ativo" : "Inativo"}
                         </Badge>
                       </TableCell>
-                      {canManage && (
+                      {canManageUsers && (
                         <TableCell className="text-right space-x-2">
                           <Button size="sm" variant="ghost" onClick={() => openEdit(u)}><Pencil className="h-4 w-4" /></Button>
-                          <Button size="sm" variant="ghost" onClick={() => toggleActive(u)}>
-                            <UserX className="h-4 w-4" />
-                          </Button>
+                          {u.role !== "admin" && (
+                            <Button size="sm" variant="ghost" onClick={() => toggleActive(u)}>
+                              <UserX className="h-4 w-4" />
+                            </Button>
+                          )}
                         </TableCell>
                       )}
                     </TableRow>
@@ -184,7 +210,11 @@ export default function Usuarios() {
             )}
             <div>
               <Label>Tipo de Acesso</Label>
-              <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as AppRole })}>
+              <Select 
+                value={form.role} 
+                onValueChange={(v) => setForm({ ...form, role: v as AppRole })}
+                disabled={editUser?.role === "admin"}
+              >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="visualizador">Visualizador</SelectItem>
@@ -192,6 +222,9 @@ export default function Usuarios() {
                   <SelectItem value="editor">Editor</SelectItem>
                 </SelectContent>
               </Select>
+              {editUser?.role === "admin" && (
+                <p className="text-xs text-muted-foreground mt-1">O administrador não pode ter seu tipo de acesso alterado.</p>
+              )}
             </div>
           </div>
           <DialogFooter>
