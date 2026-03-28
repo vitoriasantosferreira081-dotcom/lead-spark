@@ -27,7 +27,7 @@ const mainNav = [
 
 const pipelineNav = [
   { title: "Pipelines", url: "/pipelines", icon: GitBranch },
-  { title: "Automações", url: "/automacoes", icon: Zap },
+  { title: "Automações", url: "/automacoes", icon: Rocket },
   { title: "Agentes IA", url: "/agentes", icon: Bot },
 ];
 
