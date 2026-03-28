@@ -177,11 +177,13 @@ export default function Usuarios() {
                       </TableCell>
                       {canManageUsers && (
                         <TableCell className="text-right space-x-2">
-                          <Button size="sm" variant="ghost" onClick={() => openEdit(u)}><Pencil className="h-4 w-4" /></Button>
                           {u.role !== "admin" && (
-                            <Button size="sm" variant="ghost" onClick={() => toggleActive(u)}>
-                              <UserX className="h-4 w-4" />
-                            </Button>
+                            <>
+                              <Button size="sm" variant="ghost" onClick={() => openEdit(u)}><Pencil className="h-4 w-4" /></Button>
+                              <Button size="sm" variant="ghost" onClick={() => toggleActive(u)}>
+                                <UserX className="h-4 w-4" />
+                              </Button>
+                            </>
                           )}
                         </TableCell>
                       )}
